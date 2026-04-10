@@ -1,3 +1,7 @@
+import os
+from openai import OpenAI
+import httpx
+import warnings
 # Suppress the ugly "InsecureRequestWarning" so the developers' output is clean
 warnings.filterwarnings("ignore")
 
