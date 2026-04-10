@@ -1,35 +1,36 @@
-import os
-from openai import OpenAI
+# Suppress the ugly "InsecureRequestWarning" so the developers' output is clean
+warnings.filterwarnings("ignore")
 
-# Initialize the client. It automatically picks up the internal 
-# OpenShift AI environment variables from your devfile!
-client = OpenAI()
+print("--- Initializing Client ---")
 
-# Make sure this matches the exact name you gave the model when 
-# you deployed it in the OpenShift AI UI (e.g., granite-8b-code-instruct)
-MODEL_NAME = "workshop-maas-model"
+# We create a custom HTTP client that ignores the internal self-signed certificate (like curl -k)
+custom_http_client = httpx.Client(verify=False)
 
-def run_basic_prompt():
+# The client will automatically use the OPENAI_BASE_URL from your devfile
+client = OpenAI(
+    http_client=custom_http_client
+)
+
+MODEL_NAME = "workshop-maas-model" 
+
+def run_prompt():
     print(f"--- Sending request to local {MODEL_NAME} on OpenShift AI ---")
     
     try:
         response = client.chat.completions.create(
             model=MODEL_NAME,
             messages=[
-                {"role": "system", "content": "You are a helpful, senior software engineer mentoring a junior developer."},
-                {"role": "user", "content": "Explain what a REST API is in two simple sentences."}
+                {"role": "system", "content": "You are a helpful coding assistant."},
+                {"role": "user", "content": "Write a python function to reverse a string."}
             ],
-            max_tokens=150,
-            temperature=0.7
+            max_tokens=100
         )
         
         print("\nResponse from Model:")
         print(response.choices[0].message.content)
-        print("\n---------------------------------------------------------")
         
     except Exception as e:
-        print(f"Error connecting to the model: {e}")
-        print("Check your OPENAI_API_BASE environment variable.")
+        print(f"\nError connecting to the model: {e}")
 
 if __name__ == "__main__":
-    run_basic_prompt()
+    run_prompt()
