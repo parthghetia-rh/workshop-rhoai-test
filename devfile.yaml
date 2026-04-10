@@ -8,7 +8,7 @@ components:
       memoryLimit: 2G
       env:
         - name: OPENAI_API_BASE
-          value: "https://workshop-maas-model.workshop-maas.svc.cluster.local"
+          value: "https://workshop-maas-model.workshop-maas.svc.cluster.local:8080/v1"
         - name: OPENAI_API_KEY
           value: "dummy"
       command: ['tail', '-f', '/dev/null']
