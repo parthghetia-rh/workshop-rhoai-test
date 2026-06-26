@@ -1,0 +1,8 @@
+site_name: AI Chatbot Workshop
+site_description: Documentation for the AI MaaS Workshop Python and Java chatbots
+
+nav:
+  - Overview: index.md
+
+plugins:
+  - techdocs-core

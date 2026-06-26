@@ -2,13 +2,126 @@ schemaVersion: 2.2.0
 metadata:
   name: AI-MaaS-Workshop
 components:
-  - name: python-env
+  - name: dev-tools
     container:
-      image: registry.access.redhat.com/ubi9/python-311:latest
-      memoryLimit: 2G
+      image: quay.io/devfile/universal-developer-image:latest
+      memoryLimit: 4G
+      memoryRequest: 2G
+      cpuLimit: 2000m
+      cpuRequest: 500m
+      mountSources: true
+      sourceMapping: /projects
       env:
         - name: OPENAI_BASE_URL
           value: "https://granite-8b-code-instruct.workshop-maas.svc.cluster.local/v1"
         - name: OPENAI_API_KEY
-          value: "dummy"
+          value: "dummy-workshop-key"
+        - name: NODE_TLS_REJECT_UNAUTHORIZED
+          value: "0"
       command: ['tail', '-f', '/dev/null']
+
+commands:
+  - id: install-python-reqs
+    exec:
+      component: dev-tools
+      commandLine: "pip install -r requirements.txt"
+      workingDir: ${PROJECT_SOURCE}
+
+  - id: init-workspace
+    exec:
+      component: dev-tools
+      commandLine: "bash setup.sh"
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: build
+        isDefault: true
+
+  - id: prefetch-maven-deps
+    exec:
+      component: dev-tools
+      commandLine: "cd code-review-service && mvn dependency:go-offline -q 2>/dev/null || true"
+      workingDir: ${PROJECT_SOURCE}
+
+  - id: build-code-review-service
+    exec:
+      component: dev-tools
+      commandLine: "cd code-review-service && mvn compile -DskipTests"
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: build
+
+  - id: run-code-review-service
+    exec:
+      component: dev-tools
+      commandLine: "cd code-review-service && mvn spring-boot:run"
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: run
+        isDefault: true
+
+  - id: check-progress
+    exec:
+      component: dev-tools
+      commandLine: "bash check-progress.sh"
+      workingDir: ${PROJECT_SOURCE}
+      group:
+        kind: run
+
+events:
+  postStart:
+    - install-python-reqs
+    - init-workspace
+    - prefetch-maven-deps
+
+attributes:
+  .vscode/extensions.json: |
+    {
+      "recommendations": [
+        "Continue.continue",
+        "vscjava.vscode-java-pack"
+      ]
+    }
+  .vscode/tasks.json: |
+    {
+      "version": "2.0.0",
+      "tasks": [
+        {
+          "label": "Check Workshop Progress",
+          "type": "shell",
+          "command": "bash ${workspaceFolder}/check-progress.sh",
+          "group": "test",
+          "presentation": {
+            "reveal": "always",
+            "panel": "new",
+            "clear": true
+          },
+          "problemMatcher": []
+        },
+        {
+          "label": "Build Code Review Service",
+          "type": "shell",
+          "command": "cd ${workspaceFolder}/code-review-service && mvn compile -DskipTests",
+          "group": "build",
+          "presentation": {
+            "reveal": "always",
+            "panel": "shared"
+          },
+          "problemMatcher": "$javac"
+        },
+        {
+          "label": "Run Code Review Service",
+          "type": "shell",
+          "command": "cd ${workspaceFolder}/code-review-service && mvn spring-boot:run",
+          "group": {
+            "kind": "build",
+            "isDefault": false
+          },
+          "presentation": {
+            "reveal": "always",
+            "panel": "dedicated"
+          },
+          "problemMatcher": [],
+          "isBackground": true
+        }
+      ]
+    }

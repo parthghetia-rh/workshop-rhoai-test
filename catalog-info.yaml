@@ -1,0 +1,24 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: workshop-openshift-ai-maas
+  title: OpenShift AI Models-as-a-Service Workshop
+  description: Debug a broken Spring Boot Code Review Service using a private Granite LLM on OpenShift AI
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+#   backstage.io/techdocs-ref: dir:https://<hosted-git-repo>     # use absolute path instead to consolidate techdocs among repo forks
+  tags:
+    - java
+    - spring-boot
+    - python
+    - ai
+    - workshop
+# links:
+#   - url: https://<devspaces-url>/#<hosted-git-repo>
+#     title: 🚀 Launch from Dev Spaces
+#     icon: web
+spec:
+  type: module
+  lifecycle: production
+  owner: group:default/developers
+  subcomponentOf: component:default/workshop-repository
