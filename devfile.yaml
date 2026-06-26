@@ -13,7 +13,7 @@ components:
       sourceMapping: /projects
       env:
         - name: OPENAI_BASE_URL
-          value: "https://granite-8b-code-instruct.workshop-maas.svc.cluster.local/v1"
+          value: "http://granite-8b-code-instruct-predictor.workshop-maas.svc.cluster.local:8080/v1"
         - name: OPENAI_API_KEY
           value: "dummy-workshop-key"
         - name: NODE_TLS_REJECT_UNAUTHORIZED

@@ -19,7 +19,7 @@ cat <<EOF > ~/.continue/config.json
       "title": "granite-8b-code-instruct",
       "provider": "openai",
       "model": "granite-8b-code-instruct",
-      "apiBase": "https://granite-8b-code-instruct.workshop-maas.svc.cluster.local/v1",
+      "apiBase": "http://granite-8b-code-instruct-predictor.workshop-maas.svc.cluster.local:8080/v1",
       "apiKey": "dummy-key",
       "contextLength": 4096,
       "completionOptions": {
@@ -31,7 +31,7 @@ cat <<EOF > ~/.continue/config.json
     "title": "Workshop Autocomplete",
     "provider": "openai",
     "model": "granite-8b-code-instruct",
-    "apiBase": "https://granite-8b-code-instruct.workshop-maas.svc.cluster.local/v1",
+    "apiBase": "http://granite-8b-code-instruct-predictor.workshop-maas.svc.cluster.local:8080/v1",
     "apiKey": "dummy-key",
     "contextLength": 4096,
     "completionOptions": {
